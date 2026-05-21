@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f1923">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>HSD Rehab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1923;
+    --surface: #162030;
+    --surface2: #1e2d40;
+    --border: #243347;
+    --accent: #3b9eff;
+    --accent2: #00e5a0;
+    --accent3: #ff6b6b;
+    --accent4: #f5a623;
+    --text: #e8f0fb;
+    --text2: #7a9bbf;
+    --text3: #4a6580;
+    --done: #00e5a0;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(15,25,35,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex; align-items:center; justify-content:space-between;
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 18px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--accent2); }
+  .nav-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* ── PAGES ── */
+  .page { display:none; padding: 80px 20px 100px; }
+  .page.active { display:block; }
+
+  /* ── BOTTOM TAB ── */
+  .tabs {
+    position: fixed; bottom:0; left:0; right:0; z-index:100;
+    background: rgba(15,25,35,0.97);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 12px;
+  }
+  .tab {
+    flex: 1; display:flex; flex-direction:column;
+    align-items:center; gap:4px;
+    cursor:pointer; padding:6px 0;
+    transition: all 0.2s;
+  }
+  .tab-icon { font-size:20px; opacity:0.4; transition:all 0.2s; }
+  .tab-label { font-size:10px; color:var(--text3); font-weight:500; letter-spacing:0.5px; transition:all 0.2s; }
+  .tab.active .tab-icon { opacity:1; transform:scale(1.1); }
+  .tab.active .tab-label { color:var(--accent); }
+
+  /* ── HOME PAGE ── */
+  .hero {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:120px; height:120px;
+    background: radial-gradient(circle, rgba(59,158,255,0.12) 0%, transparent 70%);
+    border-radius:50%;
+  }
+  .hero-phase {
+    display:inline-block;
+    background: rgba(59,158,255,0.15);
+    color: var(--accent);
+    font-family:'DM Mono',monospace;
+    font-size:10px; letter-spacing:2px;
+    text-transform:uppercase;
+    padding:4px 10px; border-radius:20px;
+    margin-bottom:10px;
+    border: 1px solid rgba(59,158,255,0.3);
+  }
+  .hero-title {
+    font-family:'Syne',sans-serif;
+    font-weight:700; font-size:22px;
+    margin-bottom:6px; line-height:1.2;
+  }
+  .hero-sub { font-size:13px; color:var(--text2); margin-bottom:16px; }
+  .progress-bar-wrap {
+    background: var(--bg);
+    border-radius:20px; height:8px;
+    overflow:hidden; margin-bottom:8px;
+  }
+  .progress-bar-fill {
+    height:100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius:20px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .progress-label {
+    font-family:'DM Mono',monospace;
+    font-size:11px; color:var(--text2);
+    display:flex; justify-content:space-between;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family:'DM Mono',monospace;
+    font-size:10px; color:var(--text3);
+    text-transform:uppercase; letter-spacing:2px;
+    margin: 20px 0 10px;
+    padding-left: 4px;
+  }
+
+  /* ── EXERCISE CARD ── */
+  .ex-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow:hidden;
+    transition: all 0.2s;
+    cursor:pointer;
+  }
+  .ex-card.done {
+    border-color: rgba(0,229,160,0.25);
+    background: rgba(0,229,160,0.05);
+  }
+  .ex-card-top {
+    display:flex; align-items:center; gap:14px;
+    padding: 14px 16px;
+  }
+  .ex-check {
+    width:26px; height:26px; flex-shrink:0;
+    border-radius:50%;
+    border: 2px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    transition:all 0.25s;
+    font-size:13px;
+    background: transparent;
+  }
+  .ex-card.done .ex-check {
+    background: var(--accent2);
+    border-color: var(--accent2);
+  }
+  .ex-info { flex:1; min-width:0; }
+  .ex-name {
+    font-family:'Syne',sans-serif;
+    font-size:14px; font-weight:600;
+    margin-bottom:3px;
+    transition:color 0.2s;
+  }
+  .ex-card.done .ex-name { color:var(--text2); text-decoration:line-through; }
+  .ex-meta {
+    display:flex; gap:8px; flex-wrap:wrap;
+  }
+  .ex-tag {
+    font-family:'DM Mono',monospace;
+    font-size:10px; padding:2px 8px;
+    border-radius:20px;
+    border: 1px solid var(--border);
+    color:var(--text2);
+  }
+  .ex-tag.region { color:var(--accent); border-color:rgba(59,158,255,0.3); background:rgba(59,158,255,0.08); }
+  .ex-tag.sets { color:var(--accent4); border-color:rgba(245,166,35,0.3); background:rgba(245,166,35,0.08); }
+  .ex-expand { color:var(--text3); font-size:18px; transition:transform 0.2s; }
+  .ex-card.open .ex-expand { transform:rotate(180deg); }
+
+  .ex-details {
+    display:none;
+    padding: 0 16px 14px;
+    border-top: 1px solid var(--border);
+    margin-top: -2px;
+  }
+  .ex-card.open .ex-details { display:block; }
+  .ex-detail-text {
+    font-size:13px; color:var(--text2);
+    line-height:1.7; padding-top:12px;
+  }
+  .ex-detail-text strong { color:var(--text); }
+  .ex-steps {
+    margin-top:10px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .ex-step {
+    display:flex; gap:10px; align-items:flex-start;
+    font-size:12px; color:var(--text2); line-height:1.5;
+  }
+  .ex-step-num {
+    font-family:'DM Mono',monospace;
+    font-size:10px; color:var(--accent);
+    background:rgba(59,158,255,0.1);
+    border-radius:4px; padding:2px 6px;
+    flex-shrink:0; margin-top:1px;
+  }
+
+  /* ── REMINDER BUTTON ── */
+  .reminder-btn {
+    display:flex; align-items:center; gap:8px;
+    background: rgba(59,158,255,0.1);
+    border: 1px solid rgba(59,158,255,0.3);
+    color:var(--accent);
+    padding:8px 14px; border-radius:var(--radius-sm);
+    font-size:12px; font-family:'DM Sans',sans-serif;
+    font-weight:500; cursor:pointer;
+    margin-top:10px; width:100%;
+    justify-content:center;
+    transition:all 0.2s;
+  }
+  .reminder-btn:active { opacity:0.8; }
+
+  /* ── STATS ── */
+  .stats-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:10px; margin-bottom:20px;
+  }
+  .stat-card {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    text-align:center;
+  }
+  .stat-num {
+    font-family:'Syne',sans-serif;
+    font-size:28px; font-weight:800;
+    color:var(--accent);
+  }
+  .stat-label { font-size:11px; color:var(--text2); margin-top:4px; }
+
+  /* ── STREAK ── */
+  .streak-card {
+    background: linear-gradient(135deg, rgba(59,158,255,0.1), rgba(0,229,160,0.05));
+    border: 1px solid rgba(59,158,255,0.2);
+    border-radius:var(--radius);
+    padding:18px 20px;
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:20px;
+  }
+  .streak-icon { font-size:36px; }
+  .streak-num {
+    font-family:'Syne',sans-serif;
+    font-size:32px; font-weight:800;
+    color:var(--accent4);
+    line-height:1;
+  }
+  .streak-label { font-size:12px; color:var(--text2); margin-top:2px; }
+
+  /* ── CALENDAR ── */
+  .calendar-grid {
+    display:grid; grid-template-columns:repeat(7,1fr);
+    gap:6px; margin-top:10px;
+  }
+  .cal-day-label {
+    font-family:'DM Mono',monospace;
+    font-size:9px; color:var(--text3);
+    text-align:center; text-transform:uppercase;
+    letter-spacing:0.5px;
+  }
+  .cal-day {
+    aspect-ratio:1;
+    border-radius:var(--radius-sm);
+    background:var(--surface);
+    border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'DM Mono',monospace;
+    font-size:11px; color:var(--text3);
+  }
+  .cal-day.done { background:rgba(0,229,160,0.15); border-color:rgba(0,229,160,0.3); color:var(--accent2); }
+  .cal-day.partial { background:rgba(59,158,255,0.1); border-color:rgba(59,158,255,0.25); color:var(--accent); }
+  .cal-day.today { border-color:var(--accent4); color:var(--accent4); font-weight:700; }
+  .cal-day.empty { background:transparent; border-color:transparent; }
+
+  /* ── SETTINGS ── */
+  .settings-section {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .settings-header {
+    font-family:'Syne',sans-serif;
+    font-size:13px; font-weight:600;
+    padding:14px 16px 10px;
+    color:var(--text2);
+    letter-spacing:0.3px;
+    border-bottom:1px solid var(--border);
+  }
+  .settings-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 16px;
+    border-bottom:1px solid var(--border);
+  }
+  .settings-row:last-child { border-bottom:none; }
+  .settings-label { font-size:14px; }
+  .settings-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+
+  /* Toggle */
+  .toggle {
+    position:relative; width:46px; height:26px;
+    cursor:pointer; flex-shrink:0;
+  }
+  .toggle input { display:none; }
+  .toggle-track {
+    width:100%; height:100%;
+    background:var(--border);
+    border-radius:13px;
+    transition:background 0.2s;
+  }
+  .toggle input:checked ~ .toggle-track { background:var(--accent); }
+  .toggle-thumb {
+    position:absolute; top:3px; left:3px;
+    width:20px; height:20px;
+    background:white; border-radius:50%;
+    transition:left 0.2s;
+    box-shadow:0 1px 4px rgba(0,0,0,0.3);
+  }
+  .toggle input:checked ~ .toggle-thumb { left:23px; }
+
+  /* Time input */
+  .time-input {
+    background:var(--bg);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:6px 12px;
+    border-radius:var(--radius-sm);
+    font-family:'DM Mono',monospace;
+    font-size:13px;
+    outline:none;
+  }
+  .time-input:focus { border-color:var(--accent); }
+
+  /* Phase selector */
+  .phase-btns {
+    display:flex; gap:8px; padding:14px 16px;
+  }
+  .phase-btn {
+    flex:1; padding:8px;
+    border-radius:var(--radius-sm);
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text2);
+    font-family:'Syne',sans-serif;
+    font-size:12px; font-weight:600;
+    cursor:pointer; transition:all 0.2s;
+    text-align:center;
+  }
+  .phase-btn.active {
+    background:rgba(59,158,255,0.15);
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:80px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--surface2);
+    border:1px solid var(--border);
+    color:var(--text);
+    padding:10px 20px; border-radius:30px;
+    font-size:13px; white-space:nowrap;
+    opacity:0; transition:all 0.3s;
+    z-index:200; pointer-events:none;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4);
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── RESET BTN ── */
+  .reset-btn {
+    background:rgba(255,107,107,0.1);
+    border:1px solid rgba(255,107,107,0.3);
+    color:var(--accent3);
+    padding:12px;
+    border-radius:var(--radius-sm);
+    font-family:'DM Sans',sans-serif;
+    font-size:14px; font-weight:500;
+    cursor:pointer; width:100%;
+    margin-top:6px;
+    transition:all 0.2s;
+  }
+
+  .all-done-banner {
+    background:linear-gradient(135deg,rgba(0,229,160,0.15),rgba(59,158,255,0.1));
+    border:1px solid rgba(0,229,160,0.3);
+    border-radius:var(--radius);
+    padding:16px 20px;
+    text-align:center;
+    margin-bottom:16px;
+    display:none;
+  }
+  .all-done-banner.show { display:block; }
+  .all-done-banner .emoji { font-size:28px; margin-bottom:6px; }
+  .all-done-banner p { font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:var(--accent2); }
+  .all-done-banner small { font-size:12px; color:var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo">HSD<span>Rehab</span></div>
+  <div class="nav-date" id="navDate"></div>
+</nav>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: TODAY -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page active" id="page-today">
+
+  <div class="hero">
+    <div class="hero-phase" id="heroPhase">Phase 1 — Motor Control</div>
+    <div class="hero-title">Today's Session</div>
+    <div class="hero-sub" id="heroSub">Complete all exercises below</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
+    </div>
+    <div class="progress-label">
+      <span id="progressText">0 / 0 done</span>
+      <span id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <div class="all-done-banner" id="allDoneBanner">
+    <div class="emoji">🎯</div>
+    <p>Session Complete!</p>
+    <small>Great work. Come back tomorrow.</small>
+  </div>
+
+  <div id="exerciseList"></div>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: PROGRESS -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-progress">
+
+  <div class="streak-card">
+    <div class="streak-icon">🔥</div>
+    <div>
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">Day Streak</div>
+    </div>
+    <div style="margin-left:auto; text-align:right;">
+      <div style="font-family:'DM Mono',monospace; font-size:11px; color:var(--text3)">BEST</div>
+      <div style="font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:var(--text2)" id="bestStreak">0</div>
+    </div>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-num" id="totalDays">0</div>
+      <div class="stat-label">Total Days Done</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="totalEx" style="color:var(--accent2)">0</div>
+      <div class="stat-label">Exercises Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="weekDays" style="color:var(--accent4)">0/7</div>
+      <div class="stat-label">This Week</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="currentPhaseNum" style="color:var(--accent3)">1</div>
+      <div class="stat-label">Current Phase</div>
+    </div>
+  </div>
+
+  <div class="section-label">Last 28 Days</div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+    <div class="calendar-grid" id="calDayLabels"></div>
+    <div class="calendar-grid" id="calGrid" style="margin-top:6px;"></div>
+    <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+        <div style="width:10px;height:10px;border-radius:3px;background:rgba(0,229,160,0.15);border:1px solid rgba(0,229,160,0.3)"></div> Full session
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text3)">
+        <div style="width:10px;height:10px;border-radius:3px;background:rgba(59,158,255,0.1);border:1px solid rgba(59,158,255,0.25)"></div> Partial
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- PAGE: SETTINGS -->
+<!-- ═══════════════════════════════════════ -->
+<div class="page" id="page-settings">
+
+  <div class="settings-section">
+    <div class="settings-header">Current Phase</div>
+    <div class="phase-btns">
+      <button class="phase-btn active" id="pBtn1" onclick="setPhase(1)">Phase 1<br><small style="font-size:10px;font-weight:400;color:var(--text3)">Wks 1–4</small></button>
+      <button class="phase-btn" id="pBtn2" onclick="setPhase(2)">Phase 2<br><small style="font-size:10px;font-weight:400;color:var(--text3)">Wks 4–8</small></button>
+      <button class="phase-btn" id="pBtn3" onclick="setPhase(3)">Phase 3<br><small style="font-size:10px;font-weight:400;color:var(--text3)">Wks 8+</small></button>
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-header">Reminders</div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Morning Session Reminder</div>
+        <div class="settings-sub">Daily notification to start exercises</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleMorning" onchange="saveSettings()">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="settings-row">
+      <div class="settings-label">Reminder Time</div>
+      <input type="time" class="time-input" id="reminderTime" value="08:00" onchange="saveSettings(); scheduleNotification();">
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Evening Check-in</div>
+        <div class="settings-sub">Reminder if session not completed</div>
+      </div>
+      <label class="toggle">
+        <input type="checkbox" id="toggleEvening" onchange="saveSettings()">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </label>
+    </div>
+    <div class="settings-row">
+      <div class="settings-label">Evening Time</div>
+      <input type="time" class="time-input" id="eveningTime" value="20:00" onchange="saveSettings(); scheduleNotification();">
+    </div>
+  </div>
+
+  <div class="settings-section">
+    <div class="settings-header">Data</div>
+    <div class="settings-row" style="cursor:pointer;" onclick="requestNotificationPermission()">
+      <div>
+        <div class="settings-label">Enable Notifications</div>
+        <div class="settings-sub" id="notifStatus">Tap to request permission</div>
+      </div>
+      <div style="color:var(--accent);font-size:18px;">🔔</div>
+    </div>
+    <div class="settings-row">
+      <div>
+        <div class="settings-label">Reset Today's Session</div>
+        <div class="settings-sub">Uncheck all today's exercises</div>
+      </div>
+      <button onclick="resetToday()" style="background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:var(--accent3);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer;">Reset</button>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="if(confirm('Clear ALL progress data? This cannot be undone.')) clearAll()">
+    🗑️ Clear All Progress Data
+  </button>
+
+</div>
+
+<!-- BOTTOM TABS -->
+<div class="tabs">
+  <div class="tab active" id="tab-today" onclick="switchTab('today')">
+    <div class="tab-icon">📋</div>
+    <div class="tab-label">TODAY</div>
+  </div>
+  <div class="tab" id="tab-progress" onclick="switchTab('progress')">
+    <div class="tab-icon">📈</div>
+    <div class="tab-label">PROGRESS</div>
+  </div>
+  <div class="tab" id="tab-settings" onclick="switchTab('settings')">
+    <div class="tab-icon">⚙️</div>
+    <div class="tab-label">SETTINGS</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════
+// EXERCISE DATA
+// ═══════════════════════════════════════════════
+const EXERCISES = {
+  1: [
+    {
+      id:'ccf', name:'Craniocervical Flexion (CCF)',
+      region:'Cervical', sets:'3 × 10 × 10s hold',
+      freq:'Daily',
+      steps:[
+        'Lie on your back, small towel roll under head if needed',
+        'Gently nod head as if saying "yes" very slowly — do NOT lift your head',
+        'Cue: "lengthen the back of your neck" — avoid chin tucking hard',
+        'Hold 10 seconds per rep. Breathe normally throughout',
+        'If you feel your SCM (front of neck) tighten, reduce the effort'
+      ],
+      note:'Activates Longus Colli and Longus Capitis — the deep cervical stabilizers. Low load, purely neurological re-education.'
+    },
+    {
+      id:'tra', name:'TrA Activation (Abdominal Hollowing)',
+      region:'Lumbar', sets:'3 × 10 × 10s hold',
+      freq:'Daily × 2–3',
+      steps:[
+        'Lie on back, knees bent, spine neutral (small natural curve in lower back)',
+        'Gently draw your navel inward and upward toward your spine',
+        'NO pelvic movement, NO breath holding, NO rib flaring',
+        'Hold 10 seconds while breathing normally',
+        'Can progress to sitting, then standing as control improves'
+      ],
+      note:'Restores feedforward TrA activation. This is a reflex, not a crunch — effort should be only 20–30% maximum.'
+    },
+    {
+      id:'multifidus', name:'Multifidus Activation',
+      region:'Lumbar', sets:'3 × 10 × 10s hold',
+      freq:'Daily',
+      steps:[
+        'Lie face down, hands under your forehead',
+        'Gently contract the muscles on either side of your lower spine',
+        'Cue: "push the two sides of your lower back away from the spine"',
+        'No movement — purely isometric. Hold 10 seconds',
+        'Can be performed seated as you progress'
+      ],
+      note:'Lumbar multifidus provides 2/3 of segmental stiffness. Often selectively inhibited in spinal hypermobility.'
+    },
+    {
+      id:'birddog', name:'Bird-Dog',
+      region:'Lumbar / SIJ', sets:'3 × 10 each side × 8s hold',
+      freq:'Daily or 5×/week',
+      steps:[
+        'Start on hands and knees — neutral spine (no arch, no rounding)',
+        'Activate TrA first (hollow the abdomen lightly)',
+        'Slowly extend one arm and the OPPOSITE leg simultaneously',
+        'Hold 8 seconds. NO rotation of the spine — stay perfectly square',
+        'Tip: balance a water bottle on your lower back to monitor stability',
+        'Return slowly. Alternate sides.'
+      ],
+      note:'Simultaneous activation of lumbar extensors, TrA, and gluteals. McGill identified this as optimal for lumbar stability with low compressive load.'
+    },
+    {
+      id:'clamshell', name:'Clamshell — Gluteus Medius',
+      region:'SIJ / Hip', sets:'3 × 15 each side',
+      freq:'Daily or 5×/week',
+      steps:[
+        'Lie on your side, hips at 45° flexion, knees at 90°, feet together',
+        'Rotate the top knee upward like a clamshell opening',
+        'STOP before the pelvis rotates — do NOT let your hip roll back',
+        'Hold 2 seconds at top. Lower slowly.',
+        'Progress: add resistance band above knees when 15 reps are fully controlled'
+      ],
+      note:'Gluteus medius is a primary SIJ force-closure muscle. Its weakness is a major driver of SIJ pain in hypermobility (Vleeming et al., 2012).'
+    },
+    {
+      id:'pelfloor', name:'Pelvic Floor Activation',
+      region:'SIJ / Pelvis', sets:'3 × 10 × 10s hold',
+      freq:'Daily — anytime, anywhere',
+      steps:[
+        'Any position: sitting, standing, or lying down',
+        'Gently contract pelvic floor at 30–40% effort (NOT maximum squeeze)',
+        'Coordinate with TrA activation — both fire together',
+        'Hold 10 seconds. Breathe normally. Fully relax between reps.',
+        'Can be done discreetly throughout the day'
+      ],
+      note:'Pelvic floor is integral to SIJ force closure through direct ligamentous attachments (Vleeming et al., 2012). Tonic activation, not maximal contraction.'
+    },
+    {
+      id:'thorext', name:'Prone Thoracic Extension Hold',
+      region:'Thoracic', sets:'3 × 10 × 5s hold',
+      freq:'Daily or 5×/week',
+      steps:[
+        'Lie face down, forehead on a towel, arms by your sides',
+        'Lift your upper chest only 5 cm off the surface',
+        'Maintain neutral neck — do NOT hyperextend',
+        'Hold 5 seconds. Lower slowly.',
+        'Focus on thoracic extension, NOT lumbar'
+      ],
+      note:'Activates thoracic erector spinae and semispinalis. Builds the extensor endurance that reduces thoracic cracking urge.'
+    },
+    {
+      id:'breathing', name:'Lateral Costal Breathing',
+      region:'Thoracic / Intersternal', sets:'3 × 5 deep breaths',
+      freq:'Daily — use when cracking urge felt',
+      steps:[
+        'Sit upright or lie on back',
+        'Place hands on your lower ribs (sides)',
+        'Inhale slowly: feel the ribs expand OUTWARD to the sides — not chest upward',
+        'Exhale: maintain rib cage position, do not collapse',
+        'This activates the thoracic pressure canister, stiffening the thoracic cage internally'
+      ],
+      note:'Diaphragmatic breathing generates intra-thoracic pressure that passively stabilizes the thoracic and anterior chest wall — the primary substitute for intersternal/SC cracking urge.'
+    },
+  ],
+  2: [
+    { id:'mcgill_curl', name:'Modified Curl-Up', region:'Lumbar', sets:'3 sets: 5–3–1 reps × 8s',
+      freq:'3–4×/week',
+      steps:['Supine, one knee bent, other leg straight. Hands under lumbar curve.',
+        'Raise head and shoulders ONLY — do NOT perform a full sit-up',
+        'Hold 8 seconds. Lumbar must stay in neutral (hands maintain the arch)',
+        'Endurance protocol: 5 reps (set 1), 3 reps (set 2), 1 rep (set 3)'],
+      note:'McGill Big 3. Activates rectus abdominis and TrA while protecting lumbar neutral.' },
+    { id:'sideplank', name:'Side Plank', region:'Lumbar / SIJ', sets:'3 × 10s holds each side',
+      freq:'3–4×/week',
+      steps:['Start on elbow and knees (modified). Progress to elbow and feet.',
+        'Lift hips to form a straight diagonal line',
+        'No hip sagging. Breathe. Hold 10 seconds.',
+        'Targets: Quadratus lumborum, oblique abdominals — lateral lumbar stabilizers'],
+      note:'McGill Big 3. Critical for lateral SIJ force closure.' },
+    { id:'ytw', name:'Y-T-W Exercise (Prone)', region:'Thoracic / Cervical', sets:'3 × 12 each',
+      freq:'3–4×/week',
+      steps:['Lie face down, forehead on towel.',
+        'Y: raise arms to 120° from midline, thumbs pointing up (lower trapezius)',
+        'T: raise arms to 90° (middle trapezius)',
+        'W: bend elbows, pull shoulder blades together (mid-trap + rhomboids)',
+        'Raise only 5–8 cm. 3-second eccentric lowering each rep.'],
+      note:'Evidence-based scapular stabilization. Directly supports cervicothoracic junction and reduces SC/intersternal loading.' },
+    { id:'serratus', name:'Serratus Anterior — Wall Push-Up Plus', region:'Thoracic / SC', sets:'3 × 12',
+      freq:'3–4×/week',
+      steps:['Hands on wall at shoulder height, arms straight',
+        'Perform a wall push-up, then at end range push further into the wall (protraction)',
+        '3-second hold at the protraction phase — this is the "plus"',
+        'Prevents scapular winging and unloads SC joint'],
+      note:'Serratus anterior is critical for cervicothoracic control and anterior chest wall stability.' },
+    { id:'squat', name:'Wall Squat', region:'Lumbar / SIJ / Hip', sets:'3 × 15',
+      freq:'3–4×/week',
+      steps:['Stand with back against wall, feet shoulder-width, 30 cm from wall',
+        'Activate TrA before descending',
+        'Lower to 45° ONLY in Phase 2 — avoid deep squat',
+        'Control descent over 3 seconds. Press back into wall.',
+        'Squeeze glutes on ascent'],
+      note:'Closed kinetic chain. Simultaneous activation of all lower limb stabilizers with SIJ compression.' },
+    { id:'stepup', name:'Step-Up (Single Leg)', region:'SIJ / Hip', sets:'3 × 10 each side',
+      freq:'3–4×/week',
+      steps:['15 cm step. Stand beside it.',
+        'Step up with one foot. Drive through heel. Stand fully upright on step.',
+        'Lower the opposite foot slowly — 3-second eccentric',
+        'The working leg controls single-leg stance — maximum gluteus medius demand',
+        'Keep pelvis level throughout — no hip drop'],
+      note:'Single-leg stance maximizes SIJ force closure demand. Most functional exercise for SIJ stability.' },
+  ],
+  3: [
+    { id:'balance', name:'Single-Leg Balance (Eyes Closed)', region:'Full Axial', sets:'3 × 30s each side',
+      freq:'3–4×/week',
+      steps:['Stand near wall for safety.',
+        'Balance on one leg, slight knee flexion',
+        'Eyes open first — progress to eyes closed',
+        'TrA activated throughout',
+        'Challenge: small arm movements while balancing'],
+      note:'Advanced proprioception training. Addresses mechanoreceptor deficit in hypermobile joints (Mallik & Ferrell, 1995).' },
+    { id:'perturbation', name:'Balance Board Training', region:'Full Axial', sets:'3 × 45s',
+      freq:'3–4×/week',
+      steps:['Stand on wobble board — bilateral stance first',
+        'Progress to single-leg stance on board',
+        'Maintain neutral spine throughout',
+        'Eyes open → eyes closed progression'],
+      note:'Reactive stabilization training. Restores anticipatory postural adjustments lost in hypermobility.' },
+    { id:'deadbug', name:'Dead Bug (Advanced)', region:'Lumbar / Full Core', sets:'3 × 12 each',
+      freq:'3–4×/week',
+      steps:['Supine. Arms up toward ceiling. Both knees at 90° (tabletop position).',
+        'Press lower back into floor (posterior tilt — this phase uses different mechanics)',
+        'Slowly lower one arm overhead AND the opposite leg toward floor simultaneously',
+        'Return. Alternate. No lower back arching.',
+        'Most demanding core stability exercise in Phase 3'],
+      note:'Integrates all core stabilizers in anti-extension and anti-rotation patterns. Final phase only.' },
+    { id:'thorot', name:'Controlled Thoracic Rotation', region:'Thoracic', sets:'3 × 10 each side',
+      freq:'3–4×/week',
+      steps:['Seated on chair, arms crossed on chest',
+        'Rotate thorax to each side, 3-second hold',
+        'Lumbar must stay neutral — NO lumbar substitution',
+        'Range: controlled, NOT end-range'],
+      note:'Phase 3 only — introduces controlled thoracic rotation after stability is established.' },
+    { id:'pectiso', name:'Pectoral Isometric', region:'Intersternal / SC', sets:'3 × 10 × 10s',
+      freq:'Daily — use when cracking urge felt',
+      steps:['Stand or sit upright.',
+        'Press both palms together firmly in front of chest at shoulder height',
+        'Hold 10 seconds. Release fully.',
+        'NEVER stretch the pectorals — isometric ONLY',
+        'Use immediately when intersternal/SC cracking urge is felt'],
+      note:'Generates sternocostal compression through co-contraction without elongating ligaments. Substitute for intersternal cracking.' },
+  ]
+};
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let state = {
+  phase: 1,
+  todayDone: {},
+  history: {},
+  settings: { morningOn:false, eveningOn:false, morningTime:'08:00', eveningTime:'20:00' }
+};
+
+function getToday() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('hsd_state');
+    if (saved) state = {...state, ...JSON.parse(saved)};
+    // Reset todayDone if it's a new day
+    if (state.lastDate !== getToday()) {
+      // Save yesterday's progress to history first
+      if (state.lastDate && Object.keys(state.todayDone).length > 0) {
+        const ex = EXERCISES[state.phase] || EXERCISES[1];
+        const total = ex.length;
+        const done = Object.values(state.todayDone).filter(Boolean).length;
+        state.history[state.lastDate] = { done, total, phase:state.phase };
+      }
+      state.todayDone = {};
+      state.lastDate = getToday();
+      saveState();
+    }
+  } catch(e) {}
+}
+
+function saveState() {
+  try { localStorage.setItem('hsd_state', JSON.stringify(state)); } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════
+// RENDER TODAY
+// ═══════════════════════════════════════════════
+function renderToday() {
+  const exercises = EXERCISES[state.phase] || EXERCISES[1];
+  const total = exercises.length;
+  const done = exercises.filter(e => state.todayDone[e.id]).length;
+  const pct = total > 0 ? Math.round((done/total)*100) : 0;
+
+  // Header
+  const phaseNames = {1:'Phase 1 — Motor Control', 2:'Phase 2 — Progressive Strengthening', 3:'Phase 3 — Functional Integration'};
+  document.getElementById('heroPhase').textContent = phaseNames[state.phase];
+  document.getElementById('heroSub').textContent = done === total && total > 0 ? '✓ Session complete!' : `${total - done} exercises remaining`;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} / ${total} done`;
+  document.getElementById('progressPct').textContent = pct + '%';
+
+  // All done banner
+  document.getElementById('allDoneBanner').classList.toggle('show', done === total && total > 0);
+
+  // Exercise list
+  const list = document.getElementById('exerciseList');
+  list.innerHTML = '';
+
+  exercises.forEach(ex => {
+    const isDone = !!state.todayDone[ex.id];
+    const card = document.createElement('div');
+    card.className = 'ex-card' + (isDone ? ' done' : '');
+    card.dataset.id = ex.id;
+
+    const stepsHtml = ex.steps.map((s,i) =>
+      `<div class="ex-step"><span class="ex-step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span></div>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="ex-card-top" onclick="toggleCard('${ex.id}')">
+        <div class="ex-check">${isDone ? '✓' : ''}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">
+            <span class="ex-tag region">${ex.region}</span>
+            <span class="ex-tag sets">${ex.sets}</span>
+            <span class="ex-tag">${ex.freq}</span>
+          </div>
+        </div>
+        <div class="ex-expand">⌄</div>
+      </div>
+      <div class="ex-details">
+        <div class="ex-detail-text">
+          <strong>How to perform:</strong>
+          <div class="ex-steps">${stepsHtml}</div>
+          <div style="margin-top:10px;padding:8px 12px;background:rgba(59,158,255,0.08);border-left:3px solid var(--accent);border-radius:4px;font-size:12px;color:var(--text2)">
+            ${ex.note}
+          </div>
+        </div>
+        <button class="reminder-btn" onclick="markDone('${ex.id}', event)">
+          ${isDone ? '↩ Mark as not done' : '✓ Mark as Complete'}
+        </button>
+      </div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+function toggleCard(id) {
+  const card = document.querySelector(`[data-id="${id}"]`);
+  if (!card) return;
+  const wasOpen = card.classList.contains('open');
+  document.querySelectorAll('.ex-card.open').forEach(c => c.classList.remove('open'));
+  if (!wasOpen) card.classList.add('open');
+}
+
+function markDone(id, e) {
+  if(e) e.stopPropagation();
+  state.todayDone[id] = !state.todayDone[id];
+
+  const exercises = EXERCISES[state.phase] || EXERCISES[1];
+  const total = exercises.length;
+  const done = exercises.filter(ex => state.todayDone[ex.id]).length;
+  state.history[getToday()] = { done, total, phase:state.phase };
+
+  saveState();
+  renderToday();
+  if (done === total) showToast('🎯 Session complete! Great work!');
+  else showToast(state.todayDone[id] ? '✓ Done!' : 'Unmarked');
+}
+
+// ═══════════════════════════════════════════════
+// PROGRESS PAGE
+// ═══════════════════════════════════════════════
+function renderProgress() {
+  // Streak
+  let streak = 0, bestStreak = 0, tempStreak = 0;
+  const today = getToday();
+  const d = new Date();
+  for (let i = 0; i < 365; i++) {
+    const key = new Date(d.getTime() - i * 86400000).toISOString().split('T')[0];
+    const h = state.history[key];
+    if (h && h.done >= h.total && h.total > 0) {
+      tempStreak++;
+      if (i === 0 || i === streak) streak = tempStreak;
+    } else {
+      tempStreak = 0;
+      if (i > 0) break;
+    }
+    bestStreak = Math.max(bestStreak, tempStreak);
+  }
+
+  document.getElementById('streakNum').textContent = streak;
+  document.getElementById('bestStreak').textContent = bestStreak;
+
+  // Stats
+  const allDays = Object.values(state.history);
+  const fullDays = allDays.filter(h => h.done >= h.total && h.total > 0).length;
+  const totalEx = allDays.reduce((sum, h) => sum + (h.done||0), 0);
+  document.getElementById('totalDays').textContent = fullDays;
+  document.getElementById('totalEx').textContent = totalEx;
+  document.getElementById('currentPhaseNum').textContent = state.phase;
+
+  // This week
+  let weekDone = 0;
+  for (let i = 0; i < 7; i++) {
+    const key = new Date(d.getTime() - i * 86400000).toISOString().split('T')[0];
+    const h = state.history[key];
+    if (h && h.done > 0) weekDone++;
+  }
+  document.getElementById('weekDays').textContent = weekDone + '/7';
+
+  // Calendar
+  const labels = ['S','M','T','W','T','F','S'];
+  document.getElementById('calDayLabels').innerHTML = labels.map(l =>
+    `<div class="cal-day-label">${l}</div>`).join('');
+
+  const calGrid = document.getElementById('calGrid');
+  calGrid.innerHTML = '';
+
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 27);
+  const startDay = startDate.getDay();
+  for (let i = 0; i < startDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    calGrid.appendChild(empty);
+  }
+
+  for (let i = 0; i < 28; i++) {
+    const date = new Date(startDate.getTime() + i * 86400000);
+    const key = date.toISOString().split('T')[0];
+    const h = state.history[key];
+    const isToday = key === today;
+    const div = document.createElement('div');
+    let cls = 'cal-day';
+    if (isToday) cls += ' today';
+    else if (h && h.done >= h.total && h.total > 0) cls += ' done';
+    else if (h && h.done > 0) cls += ' partial';
+    div.className = cls;
+    div.textContent = date.getDate();
+    calGrid.appendChild(div);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════════════
+function setPhase(p) {
+  state.phase = p;
+  state.todayDone = {};
+  state.lastDate = getToday();
+  saveState();
+  [1,2,3].forEach(n => document.getElementById('pBtn'+n).classList.toggle('active', n===p));
+  renderToday();
+  showToast(`Switched to Phase ${p}`);
+}
+
+function saveSettings() {
+  state.settings = {
+    morningOn: document.getElementById('toggleMorning').checked,
+    eveningOn: document.getElementById('toggleEvening').checked,
+    morningTime: document.getElementById('reminderTime').value,
+    eveningTime: document.getElementById('eveningTime').value
+  };
+  saveState();
+}
+
+function loadSettings() {
+  const s = state.settings;
+  document.getElementById('toggleMorning').checked = s.morningOn || false;
+  document.getElementById('toggleEvening').checked = s.eveningOn || false;
+  document.getElementById('reminderTime').value = s.morningTime || '08:00';
+  document.getElementById('eveningTime').value = s.eveningTime || '20:00';
+  [1,2,3].forEach(n => document.getElementById('pBtn'+n).classList.toggle('active', n===state.phase));
+}
+
+async function requestNotificationPermission() {
+  if (!('Notification' in window)) {
+    showToast('Notifications not supported');
+    return;
+  }
+  const result = await Notification.requestPermission();
+  document.getElementById('notifStatus').textContent =
+    result === 'granted' ? '✓ Notifications enabled' :
+    result === 'denied' ? '✗ Permission denied' : 'Permission not granted';
+  if (result === 'granted') {
+    showToast('🔔 Notifications enabled!');
+    scheduleNotification();
+  }
+}
+
+function scheduleNotification() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if (!state.settings.morningOn) return;
+  const [h, m] = (state.settings.morningTime || '08:00').split(':').map(Number);
+  const now = new Date();
+  const next = new Date();
+  next.setHours(h, m, 0, 0);
+  if (next <= now) next.setDate(next.getDate() + 1);
+  const delay = next - now;
+  setTimeout(() => {
+    new Notification('HSD Rehab 💪', {
+      body: "Time for your daily stabilization session!",
+      icon: '/favicon.ico'
+    });
+  }, delay);
+}
+
+function checkNotifStatus() {
+  if (!('Notification' in window)) return;
+  const el = document.getElementById('notifStatus');
+  if (!el) return;
+  el.textContent = Notification.permission === 'granted' ? '✓ Notifications enabled' :
+    Notification.permission === 'denied' ? '✗ Permission denied — enable in browser settings' :
+    'Tap to request permission';
+}
+
+// ═══════════════════════════════════════════════
+// NAV & TABS
+// ═══════════════════════════════════════════════
+function switchTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  document.getElementById('tab-'+tab).classList.add('active');
+  if (tab === 'progress') renderProgress();
+  if (tab === 'settings') { loadSettings(); checkNotifStatus(); }
+}
+
+function updateNavDate() {
+  const now = new Date();
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+  document.getElementById('navDate').textContent =
+    `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function resetToday() {
+  state.todayDone = {};
+  delete state.history[getToday()];
+  saveState();
+  renderToday();
+  showToast('Today reset');
+}
+
+function clearAll() {
+  state = { phase:1, todayDone:{}, history:{}, settings:{ morningOn:false, eveningOn:false, morningTime:'08:00', eveningTime:'20:00' } };
+  state.lastDate = getToday();
+  saveState();
+  renderToday();
+  loadSettings();
+  showToast('All data cleared');
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+loadState();
+updateNavDate();
+renderToday();
+scheduleNotification();
+setInterval(updateNavDate, 60000);
+</script>
+</body>
+</html>
