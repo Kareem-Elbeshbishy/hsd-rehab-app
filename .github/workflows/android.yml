@@ -16,11 +16,13 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-with-cache: 'npm'
           node-version: '20'
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: npm install
+        run: |
+          npm ci --legacy-peer-deps || npm install
+          chmod -R +x node-modules/.bin/ || true
 
       - name: Build Web App
         run: npm run build --if-present
@@ -35,7 +37,7 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Sync Capacitor Android
-        run: npx cap sync
+        run: npx @capacitor/cli sync android
 
       - name: Build APK with Gradle
         run: |
